@@ -7,14 +7,14 @@
 <meta name="theme-color" content="#140d0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Four Paths">
-<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=5">
-<link rel="icon" type="image/png" sizes="64x64" href="./favicon.png?v=5">
-<link rel="manifest" href="./manifest.json?v=5">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=6">
+<link rel="icon" type="image/png" sizes="64x64" href="./favicon.png?v=6">
+<link rel="manifest" href="./manifest.json?v=6">
 <style>html,body{background:#140d0f;margin:0;height:100%}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script src="./support.js?v=5"></script>
+<script src="./support.js?v=6"></script>
 </head>
 <body>
 <x-dc>
@@ -23,7 +23,7 @@
 <meta name="theme-color" content="#140d0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Four Paths">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&display=swap" rel="stylesheet">
@@ -43,7 +43,7 @@ button{font:inherit;color:inherit}
     {{ bg }}
 
     <!-- CHOOSER -->
-    <div style="position:absolute;inset:0;overflow-y:auto;padding:max(52px, calc(env(safe-area-inset-top) + 18px)) 18px calc(env(safe-area-inset-bottom) + 16px);transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .4s ease, filter .4s ease;transform:{{ chooseTf }};opacity:{{ chooseOp }};pointer-events:{{ choosePe }}">
+    <div style="position:absolute;inset:0;overflow-y:auto;padding:{{ topPadA }} 18px calc(env(safe-area-inset-bottom) + 16px);transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .4s ease, filter .4s ease;transform:{{ chooseTf }};opacity:{{ chooseOp }};pointer-events:{{ choosePe }}">
       <div style="display:flex;flex-direction:column;gap:4px;padding:0 6px 16px">
         <div style="font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,240,238,0.6)">Four Paths · Sekiro</div>
         <div style="font-size:30px;font-weight:700;letter-spacing:-0.02em;line-height:1.05">Which ending?</div>
@@ -68,11 +68,11 @@ button{font:inherit;color:inherit}
           </button>
         </sc-for>
       </div>
-      <div style="padding:12px 8px 0;font-size:12px;line-height:1.5;color:rgba(255,240,238,0.5);text-wrap:pretty">Progress is saved on this device. Spoilers ahead in every list. · v5</div>
+      <div style="padding:12px 8px 0;font-size:12px;line-height:1.5;color:rgba(255,240,238,0.5);text-wrap:pretty">Progress is saved on this device. Spoilers ahead in every list. · v6</div>
     </div>
 
     <!-- CHECKLIST -->
-    <div style="position:absolute;inset:0;overflow-y:auto;padding:max(58px, calc(env(safe-area-inset-top) + 18px)) 16px calc(env(safe-area-inset-bottom) + 120px);transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .4s ease;transform:{{ listTf }};opacity:{{ listOp }};pointer-events:{{ listPe }}">
+    <div style="position:absolute;inset:0;overflow-y:auto;padding:{{ topPadB }} 16px calc(env(safe-area-inset-bottom) + 120px);transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .4s ease;transform:{{ listTf }};opacity:{{ listOp }};pointer-events:{{ listPe }}">
       <div style="display:flex;align-items:center;gap:16px;padding:0 6px 18px">
         <div style="position:relative;width:64px;height:64px;flex:none">
           <svg width="64" height="64" viewBox="0 0 64 64" style="transform:rotate(-90deg)">
@@ -149,7 +149,7 @@ button{font:inherit;color:inherit}
       </div>
     </div>
 
-    <div style="position:absolute;left:0;right:0;top:0;height:max(44px, calc(env(safe-area-inset-top) + 8px));background:linear-gradient(180deg, #140d0f 55%, rgba(20,13,15,0));pointer-events:none;z-index:2"></div>
+    <div style="position:absolute;left:0;right:0;top:0;height:{{ scrimH }};background:linear-gradient(180deg, #140d0f 40%, rgba(20,13,15,0));pointer-events:none;z-index:2"></div>
     <!-- FLOATING BAR -->
     <div style="position:absolute;left:16px;right:16px;bottom:max(20px, env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px;padding:6px;border-radius:30px;border:1px solid rgba(255,255,255,0.2);background:linear-gradient(170deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06));backdrop-filter:blur(26px) saturate(200%);-webkit-backdrop-filter:blur(26px) saturate(200%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 16px 40px rgba(0,0,0,0.45);transition:transform .5s cubic-bezier(.34,1.3,.64,1), opacity .3s ease;transform:{{ barTf }};opacity:{{ listOp }};pointer-events:{{ listPe }}">
       <button onClick="{{ goBack }}" style="height:46px;padding:0 16px 0 12px;border-radius:23px;border:none;background:rgba(255,255,255,0.1);display:flex;align-items:center;gap:6px;font-size:15px;font-weight:600;cursor:pointer" style-active="transform:scale(0.94)">
@@ -365,10 +365,11 @@ class Component extends DCLogic {
       blob({ width: 280, height: 280, bottom: -60, right: -40, background: inList ? accA(e.hue + 40, 0.35) : 'oklch(0.55 0.12 60 / 0.4)', animation: 'sk-drift 22s ease-in-out infinite' }),
       React.createElement('div', { style: { position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px)' } })
     );
-    const m = this.state.mobile, sa = this.state.standalone && m && this.state.scrH ? Math.max(this.state.scrH, window.innerHeight) : 0;
+    const m = this.state.mobile, sa = 0;
     return {
       bg, endings, showKanji,
-      outerMinH: sa ? sa + 'px' : '100dvh', outerPos: m ? 'fixed' : 'relative', outerPad: m ? '0' : '16px', outerBg: m ? '#140d0f' : '#0b0809',
+      topPadA: m ? 'calc(env(safe-area-inset-top) + 20px)' : '52px', topPadB: m ? 'calc(env(safe-area-inset-top) + 20px)' : '58px', scrimH: m ? 'calc(env(safe-area-inset-top) + 14px)' : '44px',
+      outerMinH: '100%', outerPos: m ? 'fixed' : 'relative', outerPad: m ? '0' : '16px', outerBg: m ? '#140d0f' : '#0b0809',
       frameMaxW: m ? 'none' : '420px', frameH: sa ? sa + 'px' : m ? '100%' : 'min(880px, calc(100dvh - 32px))',
       frameR: m ? '0' : '44px', frameShadow: m ? 'none' : '0 0 0 1px rgba(255,255,255,0.08), 0 40px 120px rgba(0,0,0,0.6)',
       chooseTf: inList ? 'translateX(-30%) scale(0.96)' : 'none', chooseOp: inList ? 0 : 1, choosePe: inList ? 'none' : 'auto',
