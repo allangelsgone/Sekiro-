@@ -36,7 +36,7 @@ button{font:inherit;color:inherit}
 @keyframes sk-pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
 </style>
 </helmet>
-<div style="position:{{ outerPos }};inset:0;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:{{ outerPad }};background:{{ outerBg }}">
+<div style="position:{{ outerPos }};inset:0;min-height:{{ outerMinH }};display:flex;align-items:center;justify-content:center;padding:{{ outerPad }};background:{{ outerBg }}">
   <div style="position:relative;width:100%;max-width:{{ frameMaxW }};height:{{ frameH }};border-radius:{{ frameR }};overflow:hidden;background:#140d0f;box-shadow:{{ frameShadow }}">
 
     {{ bg }}
@@ -302,8 +302,11 @@ const accA = (h, a) => `oklch(0.78 0.13 ${h} / ${a})`;
 const TAGS = { Boss: [0.25, '#ffd6d0'], Choice: [0.3, '#fff'], 'Key item': [0.25, '#fff2c8'], Item: [0.18, '#f4efee'], Final: [0.35, '#fff'] };
 
 class Component extends DCLogic {
-  state = { endingId: null, checked: {}, open: null, hideDone: false, confirmReset: false, mobile: window.matchMedia('(max-width: 520px)').matches };
+  state = { endingId: null, checked: {}, open: null, hideDone: false, confirmReset: false, mobile: window.matchMedia('(max-width: 520px)').matches, standalone: !!(window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches), scrH: 0 };
   componentDidMount() {
+    const fit = () => { const land = window.matchMedia('(orientation: landscape)').matches; this.setState({ scrH: land ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height) }); };
+    fit(); window.addEventListener('resize', fit); window.addEventListener('orientationchange', fit);
+    if (this.state.mobile) { for (const el of [document.documentElement, document.body]) { el.style.overflow = 'hidden'; el.style.overscrollBehavior = 'none'; } }
     this._mq = window.matchMedia('(max-width: 520px)'); this._mqf = e => this.setState({ mobile: e.matches }); this._mq.addEventListener('change', this._mqf);
     try { const s = JSON.parse(localStorage.getItem(KEY) || '{}'); this.setState({ checked: s.checked || {}, endingId: s.endingId || null }); } catch (e) {}
   }
@@ -365,11 +368,11 @@ class Component extends DCLogic {
       blob({ width: 280, height: 280, bottom: -60, right: -40, background: inList ? accA(e.hue + 40, 0.35) : 'oklch(0.55 0.12 60 / 0.4)', animation: 'sk-drift 22s ease-in-out infinite' }),
       React.createElement('div', { style: { position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px)' } })
     );
-    const m = this.state.mobile;
+    const m = this.state.mobile, sa = this.state.standalone && m && this.state.scrH;
     return {
       bg, endings, showKanji,
-      outerPos: m ? 'fixed' : 'relative', outerPad: m ? '0' : '16px', outerBg: m ? '#140d0f' : '#0b0809',
-      frameMaxW: m ? 'none' : '420px', frameH: m ? '100%' : 'min(880px, calc(100dvh - 32px))',
+      outerMinH: sa ? this.state.scrH + 'px' : '100dvh', outerPos: m ? 'fixed' : 'relative', outerPad: m ? '0' : '16px', outerBg: m ? '#140d0f' : '#0b0809',
+      frameMaxW: m ? 'none' : '420px', frameH: sa ? this.state.scrH + 'px' : m ? '100%' : 'min(880px, calc(100dvh - 32px))',
       frameR: m ? '0' : '44px', frameShadow: m ? 'none' : '0 0 0 1px rgba(255,255,255,0.08), 0 40px 120px rgba(0,0,0,0.6)',
       chooseTf: inList ? 'translateX(-30%) scale(0.96)' : 'none', chooseOp: inList ? 0 : 1, choosePe: inList ? 'none' : 'auto',
       listTf: inList ? 'none' : 'translateX(100%)', listOp: inList ? 1 : 0, listPe: inList ? 'auto' : 'none',
