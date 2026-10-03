@@ -3,17 +3,18 @@
 <head>
 <meta charset="utf-8">
 <title>Four Paths</title>
+<meta http-equiv="Cache-Control" content="no-cache">
 <meta name="theme-color" content="#140d0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Four Paths">
-<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="64x64" href="./favicon.png">
-<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=5">
+<link rel="icon" type="image/png" sizes="64x64" href="./favicon.png?v=5">
+<link rel="manifest" href="./manifest.json?v=5">
 <style>html,body{background:#140d0f;margin:0;height:100%}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script src="./support.js"></script>
+<script src="./support.js?v=5"></script>
 </head>
 <body>
 <x-dc>
@@ -54,12 +55,8 @@ button{font:inherit;color:inherit}
             <sc-if value="{{ showKanji }}" hint-placeholder-val="{{ true }}">
               <div style="position:absolute;right:-6px;top:-14px;font-family:'Shippori Mincho',serif;font-weight:800;font-size:70px;line-height:1;color:{{ e.accent }};opacity:.22;pointer-events:none;writing-mode:vertical-rl;white-space:nowrap;max-height:112px;overflow:hidden">{{ e.kanji }}</div>
             </sc-if>
-            <div style="display:flex;align-items:center;gap:10px">
-              <div style="width:10px;height:10px;border-radius:50%;background:{{ e.accent }};box-shadow:0 0 12px {{ e.accent }}"></div>
-              <div style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,240,238,0.65)">{{ e.meta }}</div>
-            </div>
             <div style="display:flex;flex-direction:column;gap:2px;padding-right:48px">
-              <div style="font-family:'Shippori Mincho',serif;font-size:22px;font-weight:700;line-height:1.15">{{ e.name }}</div>
+              <div style="display:flex;align-items:center;gap:10px;font-family:'Shippori Mincho',serif;font-size:22px;font-weight:700;line-height:1.15"><div style="flex:none;width:9px;height:9px;border-radius:50%;background:{{ e.accent }};box-shadow:0 0 12px {{ e.accent }}"></div>{{ e.name }}</div>
               <div style="font-size:13.5px;line-height:1.35;color:rgba(255,240,238,0.72);text-wrap:pretty">{{ e.blurb }}</div>
             </div>
             <div style="position:relative;z-index:1;display:flex;align-items:center;gap:10px">
@@ -71,7 +68,7 @@ button{font:inherit;color:inherit}
           </button>
         </sc-for>
       </div>
-      <div style="padding:12px 8px 0;font-size:12px;line-height:1.5;color:rgba(255,240,238,0.5);text-wrap:pretty">Progress is saved on this device. Spoilers ahead in every list.</div>
+      <div style="padding:12px 8px 0;font-size:12px;line-height:1.5;color:rgba(255,240,238,0.5);text-wrap:pretty">Progress is saved on this device. Spoilers ahead in every list. · v5</div>
     </div>
 
     <!-- CHECKLIST -->
@@ -368,11 +365,11 @@ class Component extends DCLogic {
       blob({ width: 280, height: 280, bottom: -60, right: -40, background: inList ? accA(e.hue + 40, 0.35) : 'oklch(0.55 0.12 60 / 0.4)', animation: 'sk-drift 22s ease-in-out infinite' }),
       React.createElement('div', { style: { position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px)' } })
     );
-    const m = this.state.mobile, sa = this.state.standalone && m && this.state.scrH;
+    const m = this.state.mobile, sa = this.state.standalone && m && this.state.scrH ? Math.max(this.state.scrH, window.innerHeight) : 0;
     return {
       bg, endings, showKanji,
-      outerMinH: sa ? this.state.scrH + 'px' : '100dvh', outerPos: m ? 'fixed' : 'relative', outerPad: m ? '0' : '16px', outerBg: m ? '#140d0f' : '#0b0809',
-      frameMaxW: m ? 'none' : '420px', frameH: sa ? this.state.scrH + 'px' : m ? '100%' : 'min(880px, calc(100dvh - 32px))',
+      outerMinH: sa ? sa + 'px' : '100dvh', outerPos: m ? 'fixed' : 'relative', outerPad: m ? '0' : '16px', outerBg: m ? '#140d0f' : '#0b0809',
+      frameMaxW: m ? 'none' : '420px', frameH: sa ? sa + 'px' : m ? '100%' : 'min(880px, calc(100dvh - 32px))',
       frameR: m ? '0' : '44px', frameShadow: m ? 'none' : '0 0 0 1px rgba(255,255,255,0.08), 0 40px 120px rgba(0,0,0,0.6)',
       chooseTf: inList ? 'translateX(-30%) scale(0.96)' : 'none', chooseOp: inList ? 0 : 1, choosePe: inList ? 'none' : 'auto',
       listTf: inList ? 'none' : 'translateX(100%)', listOp: inList ? 1 : 0, listPe: inList ? 'auto' : 'none',
