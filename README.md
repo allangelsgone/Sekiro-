@@ -6,7 +6,7 @@ A checklist app for the four endings of Sekiro: Shadows Die Twice. Pick an endin
 - `index.html` – the app
 - `support.js` – runtime (must sit next to index.html)
 - `vendor/` – React 18.3.1 (production UMD builds, MIT). Bundled so the app doesn't need a CDN; `support.js` falls back to unpkg if they're missing
-- `sw.js` – service worker so the app opens offline after the first visit (network first, cache as fallback)
+- `sw.js` – service worker so the app opens offline after the first visit. Network first and always revalidated, so a deploy shows up on the next online launch (no `?v=` bumping needed for pages or scripts; only bump it on the icon URLs when the artwork changes)
 - `manifest.json`, `apple-touch-icon.png`, `icon-512.png`, `icon-1024.png`, `favicon.png` – icons
 
 ## GitHub Pages

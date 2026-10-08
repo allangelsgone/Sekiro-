@@ -26,8 +26,11 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+  if (req.cache === 'only-if-cached' && req.mode !== 'same-origin') return;
   e.respondWith(
-    fetch(req).then(res => {
+    // 'no-cache' revalidates with the server (cheap 304 when unchanged), so a deploy shows up on the next online
+    // launch without bumping any ?v= query, even though the host sends max-age.
+    fetch(req, { cache: 'no-cache' }).then(res => {
       if (res.status === 200) {
         const copy = res.clone();
         e.waitUntil(caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {}));
