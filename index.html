@@ -14,6 +14,33 @@
 <link rel="manifest" href="./manifest.json?v=6">
 <style>html,body{background:#140d0f;margin:0;height:100%}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+(function () {
+  // If the runtime can't start (support.js blocked, React unreachable) show a message instead of a blank page.
+  function fail() {
+    if (window.__dcBoot || document.getElementById('dc-root') || document.getElementById('boot-error')) return;
+    var box = document.createElement('div');
+    box.id = 'boot-error';
+    box.setAttribute('role', 'alert');
+    box.style.cssText = 'position:fixed;top:0;right:0;bottom:0;left:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center;font:16px/1.4 -apple-system,system-ui,sans-serif;color:#f4efee;background:#140d0f';
+    var msg = document.createElement('div');
+    msg.textContent = 'Four Paths could not start. Check your connection and try again.';
+    var btn = document.createElement('button');
+    btn.textContent = 'Reload';
+    btn.style.cssText = 'height:44px;padding:0 22px;border-radius:22px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:inherit;font:inherit;font-weight:600;cursor:pointer';
+    btn.onclick = function () { location.reload(); };
+    box.appendChild(msg); box.appendChild(btn);
+    (document.body || document.documentElement).appendChild(box);
+  }
+  window.addEventListener('unhandledrejection', fail);
+  window.addEventListener('error', function (e) { if (e.target && e.target.src && /support\.js/.test(e.target.src)) fail(); }, true);
+  // Offline support (see sw.js).
+  if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('./sw.js').catch(function () {}); });
+})();
+</script>
+<!-- React is served from ./vendor so the app doesn't depend on a CDN; support.js falls back to unpkg if these fail to load. -->
+<script src="./vendor/react.production.min.js"></script>
+<script src="./vendor/react-dom.production.min.js"></script>
 <script src="./support.js?v=6"></script>
 </head>
 <body>
@@ -43,7 +70,7 @@ button{font:inherit;color:inherit}
     {{ bg }}
 
     <!-- CHOOSER -->
-    <div style="position:absolute;inset:0;overflow-y:auto;padding:{{ topPadA }} 18px calc(env(safe-area-inset-bottom) + 16px);transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .4s ease, filter .4s ease;transform:{{ chooseTf }};opacity:{{ chooseOp }};pointer-events:{{ choosePe }}">
+    <div style="position:absolute;inset:0;overflow-y:auto;padding:{{ topPadA }} 18px calc(env(safe-area-inset-bottom) + 16px);transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .4s ease, filter .4s ease, visibility 0s linear {{ chooseVisDelay }};transform:{{ chooseTf }};opacity:{{ chooseOp }};pointer-events:{{ choosePe }};visibility:{{ chooseVis }}">
       <div style="display:flex;flex-direction:column;gap:4px;padding:0 6px 16px">
         <div style="font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,240,238,0.6)">Four Paths · Sekiro</div>
         <div style="font-size:30px;font-weight:700;letter-spacing:-0.02em;line-height:1.05">Which ending?</div>
@@ -68,11 +95,11 @@ button{font:inherit;color:inherit}
           </button>
         </sc-for>
       </div>
-      <div style="padding:12px 8px 0;font-size:12px;line-height:1.5;color:rgba(255,240,238,0.5);text-wrap:pretty">Progress is saved on this device. Spoilers ahead in every list. · v6</div>
+      <div style="padding:12px 8px 0;font-size:12px;line-height:1.5;color:rgba(255,240,238,0.5);text-wrap:pretty">Progress is saved on this device. Spoilers ahead in every list. · v7</div>
     </div>
 
     <!-- CHECKLIST -->
-    <div style="position:absolute;inset:0;overflow-y:auto;padding:{{ topPadB }} 16px calc(env(safe-area-inset-bottom) + 120px);transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .4s ease;transform:{{ listTf }};opacity:{{ listOp }};pointer-events:{{ listPe }}">
+    <div style="position:absolute;inset:0;overflow-y:auto;padding:{{ topPadB }} 16px calc(env(safe-area-inset-bottom) + 120px);transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .4s ease, visibility 0s linear {{ listVisDelay }};transform:{{ listTf }};opacity:{{ listOp }};pointer-events:{{ listPe }};visibility:{{ listVis }}">
       <div style="display:flex;align-items:center;gap:16px;padding:0 6px 18px">
         <div style="position:relative;width:64px;height:64px;flex:none">
           <svg width="64" height="64" viewBox="0 0 64 64" style="transform:rotate(-90deg)">
@@ -151,7 +178,7 @@ button{font:inherit;color:inherit}
 
     <div style="position:absolute;left:0;right:0;top:0;height:{{ scrimH }};background:linear-gradient(180deg, #140d0f 40%, rgba(20,13,15,0));pointer-events:none;z-index:2"></div>
     <!-- FLOATING BAR -->
-    <div style="position:absolute;left:16px;right:16px;bottom:max(20px, env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px;padding:6px;border-radius:30px;border:1px solid rgba(255,255,255,0.2);background:linear-gradient(170deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06));backdrop-filter:blur(26px) saturate(200%);-webkit-backdrop-filter:blur(26px) saturate(200%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 16px 40px rgba(0,0,0,0.45);transition:transform .5s cubic-bezier(.34,1.3,.64,1), opacity .3s ease;transform:{{ barTf }};opacity:{{ listOp }};pointer-events:{{ listPe }}">
+    <div style="position:absolute;left:16px;right:16px;bottom:max(20px, env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px;padding:6px;border-radius:30px;border:1px solid rgba(255,255,255,0.2);background:linear-gradient(170deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06));backdrop-filter:blur(26px) saturate(200%);-webkit-backdrop-filter:blur(26px) saturate(200%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 16px 40px rgba(0,0,0,0.45);transition:transform .5s cubic-bezier(.34,1.3,.64,1), opacity .3s ease, visibility 0s linear {{ listVisDelay }};transform:{{ barTf }};opacity:{{ listOp }};pointer-events:{{ listPe }};visibility:{{ listVis }}">
       <button onClick="{{ goBack }}" style="height:46px;padding:0 16px 0 12px;border-radius:23px;border:none;background:rgba(255,255,255,0.1);display:flex;align-items:center;gap:6px;font-size:15px;font-weight:600;cursor:pointer" style-active="transform:scale(0.94)">
         <svg width="10" height="16" viewBox="0 0 10 16"><path d="M8 2 L2 8 L8 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
         Endings
@@ -305,7 +332,11 @@ class Component extends DCLogic {
     fit(); window.addEventListener('resize', fit); window.addEventListener('orientationchange', fit);
     if (this.state.mobile) { for (const el of [document.documentElement, document.body]) { el.style.overflow = 'hidden'; el.style.overscrollBehavior = 'none'; } }
     this._mq = window.matchMedia('(max-width: 520px)'); this._mqf = e => this.setState({ mobile: e.matches }); this._mq.addEventListener('change', this._mqf);
-    try { const s = JSON.parse(localStorage.getItem(KEY) || '{}'); this.setState({ checked: s.checked || {}, endingId: s.endingId || null }); } catch (e) {}
+    try {
+      const s = JSON.parse(localStorage.getItem(KEY) || '{}') || {};
+      const ok = s.checked && typeof s.checked === 'object' && !Array.isArray(s.checked);
+      this.setState({ checked: ok ? s.checked : {}, endingId: ENDINGS.some(x => x.id === s.endingId) ? s.endingId : null });
+    } catch (e) {}
   }
   save(patch) {
     this.setState(patch, () => { try { localStorage.setItem(KEY, JSON.stringify({ checked: this.state.checked, endingId: this.state.endingId })); } catch (e) {} });
@@ -374,6 +405,9 @@ class Component extends DCLogic {
       frameR: m ? '0' : '44px', frameShadow: m ? 'none' : '0 0 0 1px rgba(255,255,255,0.08), 0 40px 120px rgba(0,0,0,0.6)',
       chooseTf: inList ? 'translateX(-30%) scale(0.96)' : 'none', chooseOp: inList ? 0 : 1, choosePe: inList ? 'none' : 'auto',
       listTf: inList ? 'none' : 'translateX(100%)', listOp: inList ? 1 : 0, listPe: inList ? 'auto' : 'none',
+      // The inactive panel must also leave the tab order and accessibility tree; the delay lets its slide-out finish first.
+      chooseVis: inList ? 'hidden' : 'visible', chooseVisDelay: inList ? '.55s' : '0s',
+      listVis: inList ? 'visible' : 'hidden', listVisDelay: inList ? '0s' : '.55s',
       barTf: inList ? 'none' : 'translateY(140%)',
       cur: { name: e.name, kanji: e.kanji, give: e.give, accent: acc(e.hue), accentSoft: accA(e.hue, 0.32),
         ringOffset: 169.65 * (1 - pct), pctLabel: Math.round(pct * 100) + '%', countStr: done + ' of ' + all.length + ' steps',
