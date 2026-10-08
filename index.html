@@ -3,18 +3,45 @@
 <head>
 <meta charset="utf-8">
 <title>Four Paths</title>
-<meta http-equiv="Cache-Control" content="no-cache">
 <meta name="theme-color" content="#140d0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Four Paths">
+<!-- Pages are always revalidated by sw.js, so only the icons need a manual ?v= bump (when the artwork changes; iOS caches home-screen icons hard). -->
 <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=6">
 <link rel="icon" type="image/png" sizes="64x64" href="./favicon.png?v=6">
 <link rel="manifest" href="./manifest.json?v=6">
 <style>html,body{background:#140d0f;margin:0;height:100%}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script src="./support.js?v=6"></script>
+<script>
+(function () {
+  // If the runtime can't start (support.js blocked, React unreachable) show a message instead of a blank page.
+  function fail() {
+    if (window.__dcBoot || document.getElementById('dc-root') || document.getElementById('boot-error')) return;
+    var box = document.createElement('div');
+    box.id = 'boot-error';
+    box.setAttribute('role', 'alert');
+    box.style.cssText = 'position:fixed;top:0;right:0;bottom:0;left:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center;font:16px/1.4 -apple-system,system-ui,sans-serif;color:#f4efee;background:#140d0f';
+    var msg = document.createElement('div');
+    msg.textContent = 'Four Paths could not start. Check your connection and try again.';
+    var btn = document.createElement('button');
+    btn.textContent = 'Reload';
+    btn.style.cssText = 'height:44px;padding:0 22px;border-radius:22px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:inherit;font:inherit;font-weight:600;cursor:pointer';
+    btn.onclick = function () { location.reload(); };
+    box.appendChild(msg); box.appendChild(btn);
+    (document.body || document.documentElement).appendChild(box);
+  }
+  window.addEventListener('unhandledrejection', fail);
+  window.addEventListener('error', function (e) { if (e.target && e.target.src && /support\.js/.test(e.target.src)) fail(); }, true);
+  // Offline support (see sw.js).
+  if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('./sw.js').catch(function () {}); });
+})();
+</script>
+<!-- React is served from ./vendor so the app doesn't depend on a CDN; support.js falls back to unpkg if these fail to load. -->
+<script src="./vendor/react.production.min.js"></script>
+<script src="./vendor/react-dom.production.min.js"></script>
+<script src="./support.js"></script>
 </head>
 <body>
 <x-dc>
@@ -43,7 +70,7 @@ button{font:inherit;color:inherit}
     {{ bg }}
 
     <!-- CHOOSER -->
-    <div style="position:absolute;inset:0;overflow-y:auto;padding:{{ topPadA }} 18px calc(env(safe-area-inset-bottom) + 16px);transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .4s ease, filter .4s ease;transform:{{ chooseTf }};opacity:{{ chooseOp }};pointer-events:{{ choosePe }}">
+    <div style="position:absolute;inset:0;overflow-y:auto;padding:{{ topPadA }} {{ padXA }} calc(env(safe-area-inset-bottom) + 16px);transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .4s ease, filter .4s ease, visibility 0s linear {{ chooseVisDelay }};transform:{{ chooseTf }};opacity:{{ chooseOp }};pointer-events:{{ choosePe }};visibility:{{ chooseVis }}">
       <div style="display:flex;flex-direction:column;gap:4px;padding:0 6px 16px">
         <div style="font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,240,238,0.6)">Four Paths · Sekiro</div>
         <div style="font-size:30px;font-weight:700;letter-spacing:-0.02em;line-height:1.05">Which ending?</div>
@@ -53,26 +80,26 @@ button{font:inherit;color:inherit}
         <sc-for list="{{ endings }}" as="e" hint-placeholder-count="4">
           <button onClick="{{ e.onPick }}" style="position:relative;overflow:hidden;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:8px;padding:14px 18px 14px;border-radius:26px;border:1px solid rgba(255,255,255,0.16);background:linear-gradient(165deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04) 55%);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(255,255,255,0.06), 0 12px 30px rgba(0,0,0,0.3);transition:transform .35s cubic-bezier(.34,1.56,.64,1)" style-active="transform:scale(0.97)">
             <sc-if value="{{ showKanji }}" hint-placeholder-val="{{ true }}">
-              <div style="position:absolute;right:-6px;top:-14px;font-family:'Shippori Mincho',serif;font-weight:800;font-size:70px;line-height:1;color:{{ e.accent }};opacity:.22;pointer-events:none;writing-mode:vertical-rl;white-space:nowrap;max-height:112px;overflow:hidden">{{ e.kanji }}</div>
+              <span style="position:absolute;right:-6px;top:-14px;font-family:'Shippori Mincho',serif;font-weight:800;font-size:70px;line-height:1;color:{{ e.accent }};opacity:.22;pointer-events:none;writing-mode:vertical-rl;white-space:nowrap;max-height:112px;overflow:hidden">{{ e.kanji }}</span>
             </sc-if>
-            <div style="display:flex;flex-direction:column;gap:2px;padding-right:48px">
-              <div style="display:flex;align-items:center;gap:10px;font-family:'Shippori Mincho',serif;font-size:22px;font-weight:700;line-height:1.15"><div style="flex:none;width:9px;height:9px;border-radius:50%;background:{{ e.accent }};box-shadow:0 0 12px {{ e.accent }}"></div>{{ e.name }}</div>
-              <div style="font-size:13.5px;line-height:1.35;color:rgba(255,240,238,0.72);text-wrap:pretty">{{ e.blurb }}</div>
-            </div>
-            <div style="position:relative;z-index:1;display:flex;align-items:center;gap:10px">
-              <div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.1);overflow:hidden">
-                <div style="height:100%;border-radius:3px;background:{{ e.accent }};width:{{ e.pctStr }};transition:width .5s ease"></div>
-              </div>
-              <div style="font-size:12px;font-variant-numeric:tabular-nums;color:rgba(255,240,238,0.65);min-width:44px;text-align:right">{{ e.countStr }}</div>
-            </div>
+            <span style="display:flex;flex-direction:column;gap:2px;padding-right:48px">
+              <span style="display:flex;align-items:center;gap:10px;font-family:'Shippori Mincho',serif;font-size:22px;font-weight:700;line-height:1.15"><span style="flex:none;width:9px;height:9px;border-radius:50%;background:{{ e.accent }};box-shadow:0 0 12px {{ e.accent }}"></span>{{ e.name }}</span>
+              <span style="font-size:13.5px;line-height:1.35;color:rgba(255,240,238,0.72);text-wrap:pretty">{{ e.blurb }}</span>
+            </span>
+            <span style="position:relative;z-index:1;display:flex;align-items:center;gap:10px">
+              <span style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.1);overflow:hidden">
+                <span style="display:block;height:100%;border-radius:3px;background:{{ e.accent }};width:{{ e.pctStr }};transition:width .5s ease"></span>
+              </span>
+              <span style="font-size:12px;font-variant-numeric:tabular-nums;color:rgba(255,240,238,0.65);min-width:44px;text-align:right">{{ e.countStr }}</span>
+            </span>
           </button>
         </sc-for>
       </div>
-      <div style="padding:12px 8px 0;font-size:12px;line-height:1.5;color:rgba(255,240,238,0.5);text-wrap:pretty">Progress is saved on this device. Spoilers ahead in every list. · v6</div>
+      <div style="padding:12px 8px 0;font-size:12px;line-height:1.5;color:rgba(255,240,238,0.5);text-wrap:pretty">Progress is saved on this device. Spoilers ahead in every list. · v8</div>
     </div>
 
     <!-- CHECKLIST -->
-    <div style="position:absolute;inset:0;overflow-y:auto;padding:{{ topPadB }} 16px calc(env(safe-area-inset-bottom) + 120px);transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .4s ease;transform:{{ listTf }};opacity:{{ listOp }};pointer-events:{{ listPe }}">
+    <div style="position:absolute;inset:0;overflow-y:auto;padding:{{ topPadB }} {{ padXB }} calc(env(safe-area-inset-bottom) + 120px);transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .4s ease, visibility 0s linear {{ listVisDelay }};transform:{{ listTf }};opacity:{{ listOp }};pointer-events:{{ listPe }};visibility:{{ listVis }}">
       <div style="display:flex;align-items:center;gap:16px;padding:0 6px 18px">
         <div style="position:relative;width:64px;height:64px;flex:none">
           <svg width="64" height="64" viewBox="0 0 64 64" style="transform:rotate(-90deg)">
@@ -123,12 +150,12 @@ button{font:inherit;color:inherit}
                 </sc-if>
                 <sc-if value="{{ r.isStep }}" hint-placeholder-val="{{ true }}">
                   <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-top:{{ r.border }};background:{{ r.rowBg }};transition:background .3s ease">
-                    <button onClick="{{ r.onToggle }}" aria-label="Toggle step" style="flex:none;width:44px;height:44px;margin:-8px -8px -8px -8px;padding:8px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center">
-                      <div style="width:28px;height:28px;border-radius:50%;border:1.5px solid {{ r.checkBorder }};background:{{ r.checkBg }};box-shadow:{{ r.checkShadow }};display:flex;align-items:center;justify-content:center;transition:background .25s ease, border-color .25s ease, box-shadow .3s ease, transform .4s cubic-bezier(.34,1.56,.64,1);transform:{{ r.checkTf }}">
+                    <button onClick="{{ r.onToggle }}" aria-label="{{ r.title }}" aria-pressed="{{ r.on }}" style="flex:none;width:44px;height:44px;margin:-8px -8px -8px -8px;padding:8px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center">
+                      <span style="width:28px;height:28px;border-radius:50%;border:1.5px solid {{ r.checkBorder }};background:{{ r.checkBg }};box-shadow:{{ r.checkShadow }};display:flex;align-items:center;justify-content:center;transition:background .25s ease, border-color .25s ease, box-shadow .3s ease, transform .4s cubic-bezier(.34,1.56,.64,1);transform:{{ r.checkTf }}">
                         <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3.5 8.5 L6.8 11.5 L12.5 4.8" fill="none" stroke="#1a0f10" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="16" stroke-dashoffset="{{ r.checkOffset }}" style="transition:stroke-dashoffset .3s ease .05s"></path></svg>
-                      </div>
+                      </span>
                     </button>
-                    <div onClick="{{ r.onExpand }}" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;cursor:pointer;padding-top:3px">
+                    <div onClick="{{ r.onExpand }}" onKeyDown="{{ r.onExpandKey }}" role="{{ r.expandRole }}" tabIndex="{{ r.expandTab }}" aria-expanded="{{ r.expanded }}" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;cursor:pointer;padding-top:3px">
                       <div style="display:flex;align-items:flex-start;gap:8px">
                         <div style="flex:1;font-size:16px;font-weight:600;line-height:1.3;text-wrap:pretty;opacity:{{ r.titleOp }};text-decoration:{{ r.titleDeco }};transition:opacity .3s ease">{{ r.title }}</div>
                         <sc-if value="{{ r.hasTag }}" hint-placeholder-val="{{ false }}">
@@ -151,7 +178,7 @@ button{font:inherit;color:inherit}
 
     <div style="position:absolute;left:0;right:0;top:0;height:{{ scrimH }};background:linear-gradient(180deg, #140d0f 40%, rgba(20,13,15,0));pointer-events:none;z-index:2"></div>
     <!-- FLOATING BAR -->
-    <div style="position:absolute;left:16px;right:16px;bottom:max(20px, env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px;padding:6px;border-radius:30px;border:1px solid rgba(255,255,255,0.2);background:linear-gradient(170deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06));backdrop-filter:blur(26px) saturate(200%);-webkit-backdrop-filter:blur(26px) saturate(200%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 16px 40px rgba(0,0,0,0.45);transition:transform .5s cubic-bezier(.34,1.3,.64,1), opacity .3s ease;transform:{{ barTf }};opacity:{{ listOp }};pointer-events:{{ listPe }}">
+    <div style="position:absolute;left:{{ barL }};right:{{ barR }};bottom:max(20px, env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px;padding:6px;border-radius:30px;border:1px solid rgba(255,255,255,0.2);background:linear-gradient(170deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06));backdrop-filter:blur(26px) saturate(200%);-webkit-backdrop-filter:blur(26px) saturate(200%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 16px 40px rgba(0,0,0,0.45);transition:transform .5s cubic-bezier(.34,1.3,.64,1), opacity .3s ease, visibility 0s linear {{ listVisDelay }};transform:{{ barTf }};opacity:{{ listOp }};pointer-events:{{ listPe }};visibility:{{ listVis }}">
       <button onClick="{{ goBack }}" style="height:46px;padding:0 16px 0 12px;border-radius:23px;border:none;background:rgba(255,255,255,0.1);display:flex;align-items:center;gap:6px;font-size:15px;font-weight:600;cursor:pointer" style-active="transform:scale(0.94)">
         <svg width="10" height="16" viewBox="0 0 10 16"><path d="M8 2 L2 8 L8 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
         Endings
@@ -268,9 +295,9 @@ const ENDINGS = [
         ['persimmon', 'Give her a Persimmon, then ask for more Rice', 'Inner Sanctum', 'Item', 'She isn’t feeling well. Exhaust her dialogue first. Buy the Persimmon from the Shugendo vendor (he gives you one free if you visit after first meeting the Child). She gives you Rice for Kuro.']
       ]},
       { title: 'Rice for Kuro', steps: [
-        { warn: 'Give Rice for Kuro before defeating the Divine Dragon.' },
+        { warn: 'Give Rice for Kuro before defeating the Divine Dragon. One guide says before the true Corrupted Monk, so do this part before “Stay loyal” to be safe.' },
         ['kurorice', 'Give Rice for Kuro to Kuro', 'Ashina Castle · Kuro’s Room', '', 'Can be done right away or later.'],
-        ['riceball', 'Rest, then talk to Kuro for two Sweet Rice Balls', 'Kuro’s Room', 'Item', 'Eating one is optional — it adds a little extra dialogue with Kuro and later the Child.']
+        ['riceball', 'Rest, then talk to Kuro for two Sweet Rice Balls', 'Kuro’s Room', 'Item', 'Eat at least one in front of Kuro. Guides disagree on whether it is required to continue, and it adds extra dialogue with Kuro and later the Child. One player reports needing to eat both.']
       ]},
       { title: 'Stay loyal', steps: LOYAL },
       { title: 'Holy Chapters', steps: [
@@ -298,14 +325,33 @@ const acc = h => `oklch(0.78 0.13 ${h})`;
 const accA = (h, a) => `oklch(0.78 0.13 ${h} / ${a})`;
 const TAGS = { Boss: [0.25, '#ffd6d0'], Choice: [0.3, '#fff'], 'Key item': [0.25, '#fff2c8'], Item: [0.18, '#f4efee'], Final: [0.35, '#fff'] };
 
+// Phones: narrow screens, and touch devices held in landscape (short but wide).
+const MOBILE_MQ = '(max-width: 520px), (max-height: 520px) and (pointer: coarse)';
+// On mobile the content column never gets wider than this, so landscape phones don't get stretched cards.
+const COL_W = 560;
+const SIDE = 'env(safe-area-inset-left)', SIDE_R = 'env(safe-area-inset-right)';
+const padX = (min, ...insets) => `max(${[min + 'px', ...insets, `calc((100% - ${COL_W}px) / 2)`].join(', ')})`;
+
 class Component extends DCLogic {
-  state = { endingId: null, checked: {}, open: null, hideDone: false, confirmReset: false, mobile: window.matchMedia('(max-width: 520px)').matches, standalone: !!(window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches), scrH: 0 };
+  state = { endingId: null, checked: {}, open: null, hideDone: false, confirmReset: false, mobile: window.matchMedia(MOBILE_MQ).matches };
   componentDidMount() {
-    const fit = () => { const land = window.matchMedia('(orientation: landscape)').matches; this.setState({ scrH: land ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height) }); };
-    fit(); window.addEventListener('resize', fit); window.addEventListener('orientationchange', fit);
-    if (this.state.mobile) { for (const el of [document.documentElement, document.body]) { el.style.overflow = 'hidden'; el.style.overscrollBehavior = 'none'; } }
-    this._mq = window.matchMedia('(max-width: 520px)'); this._mqf = e => this.setState({ mobile: e.matches }); this._mq.addEventListener('change', this._mqf);
-    try { const s = JSON.parse(localStorage.getItem(KEY) || '{}'); this.setState({ checked: s.checked || {}, endingId: s.endingId || null }); } catch (e) {}
+    this._mq = window.matchMedia(MOBILE_MQ);
+    this._mqf = e => { this.lockPage(e.matches); this.setState({ mobile: e.matches }); };
+    this._mq.addEventListener('change', this._mqf);
+    this.lockPage(this.state.mobile);
+    try {
+      const s = JSON.parse(localStorage.getItem(KEY) || '{}') || {};
+      const ok = s.checked && typeof s.checked === 'object' && !Array.isArray(s.checked);
+      this.setState({ checked: ok ? s.checked : {}, endingId: ENDINGS.some(x => x.id === s.endingId) ? s.endingId : null });
+    } catch (e) {}
+  }
+  componentWillUnmount() {
+    if (this._mq) this._mq.removeEventListener('change', this._mqf);
+    clearTimeout(this._t);
+  }
+  // The phone layout is a fixed full-screen app, so stop the page behind it from scrolling or rubber-banding.
+  lockPage(on) {
+    for (const el of [document.documentElement, document.body]) { el.style.overflow = on ? 'hidden' : ''; el.style.overscrollBehavior = on ? 'none' : ''; }
   }
   save(patch) {
     this.setState(patch, () => { try { localStorage.setItem(KEY, JSON.stringify({ checked: this.state.checked, endingId: this.state.endingId })); } catch (e) {} });
@@ -324,7 +370,6 @@ class Component extends DCLogic {
       const all = this.steps(e), c = checked[e.id] || {};
       const done = all.filter(x => c[x.s[0]]).length;
       return { name: e.name, kanji: e.kanji, blurb: e.blurb, accent: acc(e.hue),
-        meta: all.length + ' steps · ' + e.phases.length + ' parts',
         pctStr: Math.round(done / all.length * 100) + '%', countStr: done + '/' + all.length,
         onPick: () => this.save({ endingId: e.id, open: null, confirmReset: false }) };
     });
@@ -343,9 +388,14 @@ class Component extends DCLogic {
         const [id, title, loc, tag, detail] = s;
         const on = !!c[id], isNext = next && next.s[0] === id;
         const t = TAGS[tag] || [0.2, '#fff'];
-        return { isWarn: false, isStep: true, border, title, loc, detail, tag, hasTag: !!tag,
+        const showDetail = !!detail && (showAll || open === id);
+        const toggleOpen = () => this.setState({ open: open === id ? null : id });
+        return { isWarn: false, isStep: true, border, title, loc, detail, tag, hasTag: !!tag, on,
           tagBg: accA(e.hue, t[0]), tagColor: t[1],
-          showDetail: !!detail && (showAll || open === id),
+          showDetail,
+          // Only rows with details act as a disclosure button (focusable, Enter/Space, aria-expanded).
+          expandRole: detail ? 'button' : undefined, expandTab: detail ? 0 : undefined, expanded: detail ? showDetail : undefined,
+          onExpandKey: ev => { if (detail && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); toggleOpen(); } },
           rowBg: isNext ? accA(e.hue, 0.1) : 'transparent',
           checkBg: on ? acc(e.hue) : 'rgba(255,255,255,0.06)',
           checkBorder: on ? acc(e.hue) : (isNext ? acc(e.hue) : 'rgba(255,255,255,0.38)'),
@@ -353,7 +403,7 @@ class Component extends DCLogic {
           checkTf: on ? 'scale(1.06)' : 'scale(1)', checkOffset: on ? 0 : 16,
           titleOp: on ? 0.45 : 1, titleDeco: on ? 'line-through' : 'none',
           onToggle: () => this.toggle(e.id, id),
-          onExpand: () => this.setState({ open: open === id ? null : id }) };
+          onExpand: toggleOpen };
       });
       return { title: p.title, countStr: st.length ? st.filter(s => c[s[0]]).length + '/' + st.length : '', rows };
     }).filter(p => p.rows.some(r => r.isStep) || !hideDone);
@@ -365,15 +415,19 @@ class Component extends DCLogic {
       blob({ width: 280, height: 280, bottom: -60, right: -40, background: inList ? accA(e.hue + 40, 0.35) : 'oklch(0.55 0.12 60 / 0.4)', animation: 'sk-drift 22s ease-in-out infinite' }),
       React.createElement('div', { style: { position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 3px)' } })
     );
-    const m = this.state.mobile, sa = 0;
+    const m = this.state.mobile;
     return {
       bg, endings, showKanji,
+      padXA: m ? padX(18, SIDE, SIDE_R) : '18px', padXB: m ? padX(16, SIDE, SIDE_R) : '16px', barL: m ? padX(16, SIDE) : '16px', barR: m ? padX(16, SIDE_R) : '16px',
       topPadA: m ? 'calc(env(safe-area-inset-top) + 20px)' : '52px', topPadB: m ? 'calc(env(safe-area-inset-top) + 20px)' : '58px', scrimH: m ? 'calc(env(safe-area-inset-top) + 14px)' : '44px',
       outerMinH: '100%', outerPos: m ? 'fixed' : 'relative', outerPad: m ? '0' : '16px', outerBg: m ? '#140d0f' : '#0b0809',
-      frameMaxW: m ? 'none' : '420px', frameH: sa ? sa + 'px' : m ? '100%' : 'min(880px, calc(100dvh - 32px))',
+      frameMaxW: m ? 'none' : '420px', frameH: m ? '100%' : 'min(880px, calc(100dvh - 32px))',
       frameR: m ? '0' : '44px', frameShadow: m ? 'none' : '0 0 0 1px rgba(255,255,255,0.08), 0 40px 120px rgba(0,0,0,0.6)',
       chooseTf: inList ? 'translateX(-30%) scale(0.96)' : 'none', chooseOp: inList ? 0 : 1, choosePe: inList ? 'none' : 'auto',
       listTf: inList ? 'none' : 'translateX(100%)', listOp: inList ? 1 : 0, listPe: inList ? 'auto' : 'none',
+      // The inactive panel must also leave the tab order and accessibility tree; the delay lets its slide-out finish first.
+      chooseVis: inList ? 'hidden' : 'visible', chooseVisDelay: inList ? '.55s' : '0s',
+      listVis: inList ? 'visible' : 'hidden', listVisDelay: inList ? '0s' : '.55s',
       barTf: inList ? 'none' : 'translateY(140%)',
       cur: { name: e.name, kanji: e.kanji, give: e.give, accent: acc(e.hue), accentSoft: accA(e.hue, 0.32),
         ringOffset: 169.65 * (1 - pct), pctLabel: Math.round(pct * 100) + '%', countStr: done + ' of ' + all.length + ' steps',
